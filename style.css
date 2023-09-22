@@ -46,6 +46,11 @@
     border: 1px solid #008000;
 }
 
+/* set navbar text color */
+.navbar a {
+    color: #eeeeee;
+}
+
 /* display background color black on navbar scroll */
 .navbarScroll.navbarDark {
     background-color: black;
@@ -69,7 +74,7 @@
 }
 
 /* spacing on all sections */
-#about, #services, #portfolio, #contact {
+#about, #interests, #projects, #contact {
     margin-top: 4rem;
     padding-top: 4rem;
 }
