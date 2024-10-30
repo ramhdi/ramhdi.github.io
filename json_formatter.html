@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Beautifier and Compacter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    .main {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      height: 100vh;
+    }
+
+    .control {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+
+    button.btn-control {
+      height: 32px;
+      width: 116px;
+      margin: 10px 0px;
+    }
+
+    #textSizeLabel {
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    #textSizeValue {
+      margin: 0 5px;
+      align-self: center;
+    }
+
+    #textSizeControls {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      flex-direction: row;
+    }
+
+    button.btn-textsize {
+      height: 32px;
+      width: 32px;
+      margin: 5px;
+    }
+
+    .CodeMirror {
+      height: auto;
+      border: 1px solid #ccc;
+      flex-grow: 1;
+      width: calc(50% - 40px);
+    }
+
+    .CodeMirror-scroll {
+      max-height: 100%;
+      overflow-y: hidden;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main">
+    <textarea id="inputJson" class="json-area"></textarea>
+    <div class="control">
+      <button class="btn-control" id="beautifyButton">Beautify</button>
+      <button class="btn-control" id="compactButton">Compact</button>
+      <label id="textSizeLabel">Text Size</label>
+      <div id="textSizeControls">
+        <button class="btn-textsize" id="increaseTextSize">+</button>
+        <label id="textSizeValue"></label>
+        <button class="btn-textsize" id="decreaseTextSize">-</button>
+      </div>
+    </div>
+    <textarea id="outputJson" class="json-area"></textarea>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputEditor = CodeMirror.fromTextArea(document.getElementById('inputJson'), {
+        lineNumbers: true,
+        mode: "application/json",
+        theme: "default"
+      });
+
+      const outputEditor = CodeMirror.fromTextArea(document.getElementById('outputJson'), {
+        lineNumbers: true,
+        mode: "application/json",
+        theme: "default",
+        readOnly: true
+      });
+
+      // Placeholder logic
+      const inputPlaceholder = "Enter JSON here...";
+      const outputPlaceholder = "Output...";
+
+      if (!inputEditor.getValue()) {
+        inputEditor.setValue(inputPlaceholder);
+      }
+
+      inputEditor.on("focus", function () {
+        if (inputEditor.getValue() === inputPlaceholder) {
+          inputEditor.setValue("");
+        }
+      });
+
+      inputEditor.on("blur", function () {
+        if (!inputEditor.getValue()) {
+          inputEditor.setValue(inputPlaceholder);
+        }
+      });
+
+      // Initially set the output placeholder
+      outputEditor.setValue(outputPlaceholder);
+
+      document.getElementById('beautifyButton').addEventListener('click', () => {
+        try {
+          const parsedJson = JSON.parse(inputEditor.getValue());
+          outputEditor.setValue(JSON.stringify(parsedJson, null, 2));
+        } catch (e) {
+          outputEditor.setValue(e.toString());
+        }
+      });
+
+      document.getElementById('compactButton').addEventListener('click', () => {
+        try {
+          const parsedJson = JSON.parse(inputEditor.getValue());
+          outputEditor.setValue(JSON.stringify(parsedJson));
+        } catch (e) {
+          outputEditor.setValue(e.toString());
+        }
+      });
+
+      let fontSize = 14;
+      const fontSizeDisplay = document.getElementById('textSizeValue');
+      fontSizeDisplay.textContent = `${fontSize}px`;
+      inputEditor.getWrapperElement().style.fontSize = `${fontSize}px`;
+      outputEditor.getWrapperElement().style.fontSize = `${fontSize}px`;
+
+      const updateFontSize = (newSize) => {
+        document.getElementById('textSizeValue').val
+        inputEditor.getWrapperElement().style.fontSize = `${newSize}px`;
+        outputEditor.getWrapperElement().style.fontSize = `${newSize}px`;
+        fontSizeDisplay.textContent = `${newSize}px`;
+        inputEditor.refresh();
+        outputEditor.refresh();
+      };
+
+      document.getElementById('increaseTextSize').addEventListener('click', () => {
+        fontSize++;
+        updateFontSize(fontSize);
+      });
+
+      document.getElementById('decreaseTextSize').addEventListener('click', () => {
+        if (fontSize > 1) {
+          fontSize--;
+          updateFontSize(fontSize);
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
