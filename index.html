@@ -8,17 +8,54 @@ isHome: true
     <img src="/images/hero.png" alt="Rama Rahardi" class="hero-image">
     <h1 class="hero-title">hi!</h1>
     <p class="hero-subtitle">
-      I'm Rama, an IoT Application Engineer and tech enthusiast passionate about building innovative solutions
-      for vehicle telematics, wireless networking, and embedded systems.
+      I'm Rama, an engineer and tech enthusiast passionate about building innovative solutions.
     </p>
     <div class="mt-8">
-      <a href="/about.html" class="cta-button">
-        <i class="fas fa-user"></i> Learn More About Me
-      </a>
-      <a href="/contact.html" class="cta-button">
+      <button onclick="showContactPopup()" class="cta-button">
         <i class="fas fa-envelope"></i> Get In Touch
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Latest Projects</h2>
+    $if(projects)$
+    <div class="blog-grid">
+      $for(projects)$
+      <article class="blog-post">
+        <div class="blog-post-content">
+          <h3 class="blog-post-title">
+            <a href="$url$">$title$</a>
+          </h3>
+          <time class="blog-post-date" datetime="$isoDate$">
+            <i class="fas fa-calendar"></i> $date$
+          </time>
+          <div class="blog-post-excerpt">
+            $if(description)$
+            $description$
+            $else$
+            Learn more about this project...
+            $endif$
+          </div>
+          <a href="$url$" class="project-link">
+            View Project <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </article>
+      $endfor$
+    </div>
+    <div class="text-center mt-8">
+      <a href="/projects.html" class="cta-button">
+        <i class="fas fa-folder-open"></i> View All Projects
       </a>
     </div>
+    $else$
+    <div class="text-center">
+      <p>Projects coming soon!</p>
+    </div>
+    $endif$
   </div>
 </section>
 
@@ -58,26 +95,7 @@ isHome: true
     $else$
     <div class="text-center">
       <p>No blog posts yet. Check back soon!</p>
-      <a href="/projects.html" class="cta-button mt-8">
-        <i class="fas fa-folder-open"></i> View My Projects Instead
-      </a>
     </div>
     $endif$
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <h2 class="section-title">Quick Links</h2>
-    <div class="contact-grid">
-      <div class="contact-item">
-        <i class="fas fa-file-pdf contact-icon"></i>
-        <div>
-          <h4>Resume</h4>
-          <p>Download my latest resume</p>
-          <a href="/resume/Rama_Rahardi_Resume.pdf" target="_blank">Download <i class="fas fa-download"></i></a>
-        </div>
-      </div>
-    </div>
   </div>
 </section>

@@ -1,6 +1,6 @@
 <h1 class="section-title">$title$</h1>
 <div class="blog-grid">
-  $for(posts)$
+  $for(projects)$
   <article class="blog-post">
     <div class="blog-post-content">
       <h3 class="blog-post-title">
@@ -9,34 +9,26 @@
       <time class="blog-post-date" datetime="$isoDate$">
         <i class="fas fa-calendar"></i> $date$
       </time>
-      $if(author)$
-      <div class="blog-post-author">
-        <i class="fas fa-user"></i> by $author$
+      $if(description)$
+      <div class="blog-post-excerpt">
+        $description$
       </div>
       $endif$
-      <div class="blog-post-excerpt">
-        $if(teaser)$
-        $teaser$
-        $else$
-        Click to read more about this topic...
-        $endif$
-      </div>
       <a href="$url$" class="project-link">
-        Read Full Post <i class="fas fa-arrow-right"></i>
+        View Project <i class="fas fa-arrow-right"></i>
       </a>
     </div>
   </article>
   $endfor$
 </div>
 
-$if(posts)$
+$if(projects)$
 $else$
 <div class="text-center">
   <div class="card" style="max-width: 500px; margin: 0 auto;">
-    <i class="fas fa-blog" style="font-size: 3rem; color: var(--color-secondary); margin-bottom: 1rem;"></i>
-    <h3>No Posts Yet</h3>
-    <p>I'm working on some great content! Check back soon for technical articles about IoT, embedded systems, and
-      software engineering.</p>
+    <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--color-secondary); margin-bottom: 1rem;"></i>
+    <h3>No Projects Yet</h3>
+    <p>I'm working on some exciting projects! Check back soon for technical showcases and open source contributions.</p>
     <a href="/" class="project-link">
       <i class="fas fa-home"></i> Back to Home
     </a>

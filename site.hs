@@ -17,7 +17,7 @@ main = hakyll $ do
     route idRoute
     compile copyFileCompiler
 
-  match "projects/*" $ do
+  match "projects/*/assets/*" $ do
     route idRoute
     compile copyFileCompiler
 
@@ -42,6 +42,15 @@ main = hakyll $ do
         >>= loadAndApplyTemplate "templates/default.html" postCtx
         >>= relativizeUrls
 
+  -- Projects
+  match "projects/*/index.md" $ do
+    route $ gsubRoute "/index.md" (const ".html")
+    compile $
+      pandocCompiler
+        >>= loadAndApplyTemplate "templates/project.html" projectCtx
+        >>= loadAndApplyTemplate "templates/default.html" projectCtx
+        >>= relativizeUrls
+
   -- Blog index
   create ["blog.html"] $ do
     route idRoute
@@ -57,19 +66,19 @@ main = hakyll $ do
         >>= loadAndApplyTemplate "templates/default.html" blogCtx
         >>= relativizeUrls
 
-  -- Archive page
-  create ["archive.html"] $ do
+  -- Projects index
+  create ["projects.html"] $ do
     route idRoute
     compile $ do
-      posts <- recentFirst =<< loadAll "posts/*"
-      let archiveCtx =
-            listField "posts" postCtx (return posts)
-              `mappend` constField "title" "Archives"
+      projects <- recentFirst =<< loadAll "projects/*/index.md"
+      let projectsCtx =
+            listField "projects" projectCtx (return projects)
+              `mappend` constField "title" "Projects"
               `mappend` defaultContext
 
       makeItem ""
-        >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
-        >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+        >>= loadAndApplyTemplate "templates/projects.html" projectsCtx
+        >>= loadAndApplyTemplate "templates/default.html" projectsCtx
         >>= relativizeUrls
 
   -- Home page
@@ -77,8 +86,10 @@ main = hakyll $ do
     route idRoute
     compile $ do
       posts <- recentFirst =<< loadAll "posts/*"
+      projects <- recentFirst =<< loadAll "projects/*/index.md"
       let indexCtx =
             listField "posts" postCtx (return (take 3 posts))
+              `mappend` listField "projects" projectCtx (return (take 3 projects))
               `mappend` defaultContext
 
       getResourceBody
@@ -91,6 +102,12 @@ main = hakyll $ do
 --------------------------------------------------------------------------------
 postCtx :: Context String
 postCtx =
+  dateField "date" "%B %e, %Y"
+    `mappend` dateField "isoDate" "%Y-%m-%d"
+    `mappend` defaultContext
+
+projectCtx :: Context String
+projectCtx =
   dateField "date" "%B %e, %Y"
     `mappend` dateField "isoDate" "%Y-%m-%d"
     `mappend` defaultContext
