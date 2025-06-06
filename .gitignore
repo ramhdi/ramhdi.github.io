@@ -1,0 +1,46 @@
+# Hakyll
+_site/
+_cache/
+.stack-work/
+
+# Haskell
+dist/
+dist-newstyle/
+.cabal-sandbox/
+cabal.sandbox.config
+*.o
+*.hi
+*.chi
+*.chi
+*.dyn_o
+*.dyn_hi
+.hpc
+.hsenv
+.stack-work/
+cabal.project.local
+cabal.project.local~
+.HTF/
+.ghc.environment.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
