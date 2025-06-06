@@ -1,0 +1,44 @@
+<div class="blog-grid">
+  $for(posts)$
+  <article class="blog-post">
+    <div class="blog-post-content">
+      <h3 class="blog-post-title">
+        <a href="$url$">$title$</a>
+      </h3>
+      <time class="blog-post-date" datetime="$isoDate$">
+        <i class="fas fa-calendar"></i> $date$
+      </time>
+      $if(author)$
+      <div class="blog-post-author">
+        <i class="fas fa-user"></i> by $author$
+      </div>
+      $endif$
+      <div class="blog-post-excerpt">
+        $if(teaser)$
+        $teaser$
+        $else$
+        Click to read more about this topic...
+        $endif$
+      </div>
+      <a href="$url$" class="project-link">
+        Read Full Post <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </article>
+  $endfor$
+</div>
+
+$if(posts)$
+$else$
+<div class="text-center">
+  <div class="card" style="max-width: 500px; margin: 0 auto;">
+    <i class="fas fa-blog" style="font-size: 3rem; color: var(--color-secondary); margin-bottom: 1rem;"></i>
+    <h3>No Posts Yet</h3>
+    <p>I'm working on some great content! Check back soon for technical articles about IoT, embedded systems, and
+      software engineering.</p>
+    <a href="/" class="project-link">
+      <i class="fas fa-home"></i> Back to Home
+    </a>
+  </div>
+</div>
+$endif$
