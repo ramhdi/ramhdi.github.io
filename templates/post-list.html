@@ -1,7 +1,22 @@
-<ul>
-    $for(posts)$
-        <li>
-            <a href="$url$">$title$</a> - $date$
-        </li>
-    $endfor$
-</ul>
+<div class="post-list">
+  $for(posts)$
+  <article class="post-list-item">
+    <h3 class="post-list-title">
+      <a href="$url$">$title$</a>
+    </h3>
+    <time class="post-list-date" datetime="$isoDate$">
+      <i class="fas fa-calendar"></i> $date$
+    </time>
+    $if(author)$
+    <div class="post-list-author">
+      <i class="fas fa-user"></i> by $author$
+    </div>
+    $endif$
+    $if(teaser)$
+    <div class="post-list-teaser">
+      $teaser$
+    </div>
+    $endif$
+  </article>
+  $endfor$
+</div>

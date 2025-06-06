@@ -41,6 +41,7 @@ jobs:
       - name: Build site
         run: |
           stack build
+          stack exec site clean
           stack exec site build
 
       - name: Setup Pages

@@ -1,16 +1,101 @@
 ---
 title: Home
+isHome: true
 ---
 
-<h2>Welcome</h2>
+<section class="hero">
+  <div class="container">
+    <img src="/images/hero.png" alt="Rama Rahardi" class="hero-image">
+    <h1 class="hero-title">hi!</h1>
+    <p class="hero-subtitle">
+      I'm Rama, an engineer and tech enthusiast passionate about building innovative solutions.
+    </p>
+    <div class="mt-8">
+      <button onclick="showContactPopup()" class="cta-button">
+        <i class="fas fa-envelope"></i> Get In Touch
+      </button>
+    </div>
+  </div>
+</section>
 
-<img src="/images/haskell-logo.png" style="float: right; margin: 10px;" />
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Latest Projects</h2>
+    $if(projects)$
+    <div class="blog-grid">
+      $for(projects)$
+      <article class="blog-post">
+        <div class="blog-post-content">
+          <h3 class="blog-post-title">
+            <a href="$url$">$title$</a>
+          </h3>
+          <time class="blog-post-date" datetime="$isoDate$">
+            <i class="fas fa-calendar"></i> $date$
+          </time>
+          <div class="blog-post-excerpt">
+            $if(description)$
+            $description$
+            $else$
+            Learn more about this project...
+            $endif$
+          </div>
+          <a href="$url$" class="project-link">
+            View Project <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </article>
+      $endfor$
+    </div>
+    <div class="text-center mt-8">
+      <a href="/projects.html" class="cta-button">
+        <i class="fas fa-folder-open"></i> View All Projects
+      </a>
+    </div>
+    $else$
+    <div class="text-center">
+      <p>Projects coming soon!</p>
+    </div>
+    $endif$
+  </div>
+</section>
 
-<p>Welcome to my blog!</p>
-
-<p>I've reproduced a list of recent posts here for your reading pleasure:</p>
-
-<h2>Posts</h2>
-$partial("templates/post-list.html")$
-
-<p>…or you can find more in the <a href="/archive.html">archives</a>.</p>
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Latest Blog Posts</h2>
+    $if(posts)$
+    <div class="blog-grid">
+      $for(posts)$
+      <article class="blog-post">
+        <div class="blog-post-content">
+          <h3 class="blog-post-title">
+            <a href="$url$">$title$</a>
+          </h3>
+          <time class="blog-post-date" datetime="$isoDate$">
+            <i class="fas fa-calendar"></i> $date$
+          </time>
+          <div class="blog-post-excerpt">
+            $if(teaser)$
+            $teaser$
+            $else$
+            Read more about this topic...
+            $endif$
+          </div>
+          <a href="$url$" class="project-link">
+            Read More <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </article>
+      $endfor$
+    </div>
+    <div class="text-center mt-8">
+      <a href="/blog.html" class="cta-button">
+        <i class="fas fa-blog"></i> View All Posts
+      </a>
+    </div>
+    $else$
+    <div class="text-center">
+      <p>No blog posts yet. Check back soon!</p>
+    </div>
+    $endif$
+  </div>
+</section>

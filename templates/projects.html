@@ -1,0 +1,37 @@
+<h1 class="section-title">$title$</h1>
+<div class="blog-grid">
+  $for(projects)$
+  <article class="blog-post">
+    <div class="blog-post-content">
+      <h3 class="blog-post-title">
+        <a href="$url$">$title$</a>
+      </h3>
+      <time class="blog-post-date" datetime="$isoDate$">
+        <i class="fas fa-calendar"></i> $date$
+      </time>
+      $if(description)$
+      <div class="blog-post-excerpt">
+        $description$
+      </div>
+      $endif$
+      <a href="$url$" class="project-link">
+        View Project <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </article>
+  $endfor$
+</div>
+
+$if(projects)$
+$else$
+<div class="text-center">
+  <div class="card" style="max-width: 500px; margin: 0 auto;">
+    <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--color-secondary); margin-bottom: 1rem;"></i>
+    <h3>No Projects Yet</h3>
+    <p>I'm working on some exciting projects! Check back soon for technical showcases and open source contributions.</p>
+    <a href="/" class="project-link">
+      <i class="fas fa-home"></i> Back to Home
+    </a>
+  </div>
+</div>
+$endif$
