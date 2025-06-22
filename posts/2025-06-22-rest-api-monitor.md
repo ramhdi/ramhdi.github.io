@@ -8,19 +8,19 @@ At work, my team was tasked with integrating real-time IoT data into a dashboard
 
 Unfortunately, the task wasn\'t that straightforward.
 
-What we discovered was that API downtimes were far more common than anticipated. Beyond simple connectivity issues, we encountered another significant challenge: stale data. Since our use case demanded real-time information, receiving outdated responses was almost as problematic as receiving no response at all. This led us down a path of building customized REST API monitoring solution.
+What we discovered was that API downtimes were far more common than anticipated. In addition to simple connectivity issues, we encountered another significant challenge: stale data. Since our use case demanded real-time information, receiving outdated responses was almost as problematic as receiving no response at all. This led us down a path of building customized REST API monitoring solution.
 
 Our objectives materialized into two key metrics: measuring both the uptime and the up-to-date percentage of our REST API endpoints. These metrics became crucial not only for our internal team\'s performance evaluation but also for meeting the reliability standards our client demanded.
 
 ## First Iteration: Uptime Kuma
 
-Our initial approach was to leverage existing tools, and Uptime Kuma emerged as the natural first choice. The open-source monitoring solution offered advantages:
+Our initial approach was to leverage existing tools, and [Uptime Kuma](https://github.com/louislam/uptime-kuma) emerged as the natural first choice. The open-source monitoring solution offered advantages:
 
 - Completely open source with an active community
 - Straightforward configuration with minimal setup overhead
 - Rich and informative interface including historical charts for key metrics
 
-During our initial testing phase, everything appeared to work seamlessly. However, as we moved toward production deployment, fundamental limitations became apparent. Our API requests required dynamic query parameters—specifically, start and end timestamps that needed to be calculated at runtime. Uptime Kuma\'s static configuration model simply could not accommodate this requirement.
+During our initial testing phase, everything appeared to work seamlessly. However, fundamental limitations became apparent. Our API requests required dynamic query parameters—specifically, start and end timestamps that needed to be calculated at runtime. Uptime Kuma\'s static configuration model simply could not accommodate this requirement.
 
 More critically, Uptime Kuma lacked the ability to programatically parse response content. This meant we had no way to detect stale data scenarios where the API returned a successful HTTP status but with outdated or empty payloads. For a real-time monitoring system, this was a deal-breaker.
 
@@ -32,40 +32,55 @@ For our custom REST API monitor, we chose Rust as our foundation language. The d
 
 Our technology stack evolved around proven libraries:
 
-- **Tokio** for asynchronous runtime management
-- **Axum** for our HTTP server implementation
-- **Reqwest** for HTTP client functionality
-- **SQLite** with **SQLx** for data persistence (chosen for rapid development)
+- **[Tokio](https://tokio.rs/)** for asynchronous runtime management
+- **[Axum](https://github.com/tokio-rs/axum)** for our HTTP server implementation
+- **[Reqwest](https://github.com/seanmonstar/reqwest)** for HTTP client functionality
+- **[SQLite](https://sqlite.org/)** with **[SQLx](https://github.com/launchbadge/sqlx)** for data persistence (chosen for rapid development)
 
 The initial architecture followed a straightforward approach:
 
 ```rust
-// Simplified monitoring loop
-async fn monitor_loop() {
+async fn monitor_loop(state: AppState, assets: &Vec<Asset>) {
+    let mut api1_interval = tokio::time::interval(StdDuration::from_secs(10));
+    let mut api2_interval = tokio::time::interval(StdDuration::from_secs(300));
+    let mut global_api_interval = tokio::time::interval(StdDuration::from_secs(10));
+
     loop {
-        for monitor in monitors {
-            let result = call_api_with_timeout(
-                &monitor.endpoint,
-                generate_time_params()
-            ).await;
+        tokio::select! {
+            _ = api1_interval.tick() => {
+                for asset in assets {
+                    let (status, response_time, error) = check_api1(&state.client, &asset.device_id, &auth_token).await;
+                    store_check_result(&state.db, &asset.id, "Api1", status, response_time, error).await;
+                }
+            }
 
-            let status = match result {
-                Ok(response) if response.is_empty() => Status::Stale,
-                Ok(_) => Status::Up,
-                Err(_) => Status::Down,
-            };
+            _ = api2_interval.tick() => {
+                for asset in assets {
+                    let apis = vec![
+                        ("Api2a", "https://api.example.com/endpoint1"),
+                        ("Api2b", "https://api.example.com/endpoint2"),
+                        ("Api2c", "https://api.example.com/endpoint3"),
+                    ];
 
-            store_result_to_db(&monitor.id, status).await;
+                    for (api_type, endpoint) in apis {
+                        let (status, response_time, error) = check_api2(&state.client, endpoint, &asset.device_id).await;
+                        store_check_result(&state.db, &asset.id, api_type, status, response_time, error).await;
+                    }
+                }
+            }
+
+            _ = global_api_interval.tick() => {
+                let (status, response_time, error) = check_global_api(&state.client).await;
+                store_check_result(&state.db, None, "GlobalApi", status, response_time, error).await;
+            }
         }
-
-        tokio::time::sleep(check_interval).await;
     }
 }
 ```
 
-We deployed the solution using Docker Compose and began collecting production data. Within 24 hours, however, serious issues became apparent.
+We deployed the solution and began collecting production data. Within 24 hours, however, serious issues became apparent.
 
-The next morning when we checked our monitoring dashboard, database queries were noticeably slow, and further checks revealed our SQLite file had grown to 60 MB in just one day. At this rate, we would consume several gigabytes within a month and potentially hundreds of gigabytes over a year.
+The next morning when we checked our monitoring dashboard, database queries were noticeably slow, and further checks revealed our SQLite file had grown to 60 MB in just one day. At this rate, we would consume several gigabytes within a month and potentially tens of gigabytes over a year.
 
 Code analysis revealed an additional architectural flaw: our monitors operated within a shared execution context, meaning a slow or hanging request from one monitor could block others from executing. This meant that the monitors were not isolated from each other, and therefore not optimal.
 
@@ -75,11 +90,65 @@ The problems we encountered demanded a fundamental redesign rather than incremen
 
 ### 1. Status-Change-Only Storage
 
-Instead of storing every monitoring check result, we implemented a system that only persisted actual status changes. This approach reduced our storage requirements by a scale linear to the uptime percentage. If the uptime is around 99%, the storage reduction should be around that number.
+Instead of storing every monitoring check result, we implemented a system that only persisted actual status changes.
+
+```rust
+pub async fn check_and_update_monitor_state(
+    monitor_id: &str,
+    asset_id: Option<&str>,
+    api_type: &ApiType,
+    new_status: CheckStatus,
+    response_time_ms: Option<i64>,
+    error_message: Option<String>,
+    states: &MonitorStates,
+    db: &sqlx::PgPool,
+) -> anyhow::Result<()> {
+    let mut states_guard = states.write().await;
+    let current_state = states_guard.get(monitor_id);
+
+    let is_first_check = current_state.map(|s| !s.has_been_checked).unwrap_or(true);
+    let status_changed = if is_first_check {
+        true
+    } else {
+        current_state.unwrap().current_status != new_status
+    };
+
+    if status_changed {
+        // Store status change to database
+        store_status_change(
+            db,
+            monitor_id,
+            asset_id,
+            api_type,
+            old_status,
+            new_status,
+            response_time_ms,
+            error_message,
+        ).await?;
+    }
+
+    // Always update in-memory state
+    states_guard.insert(
+        monitor_id.to_string(),
+        MonitorState {
+            current_status: new_status,
+            last_change_time: if status_changed { Utc::now() } else { previous_change_time },
+            last_check_time: Some(Utc::now()),
+            latest_response_time: response_time_ms,
+            latest_error: error_message,
+            has_been_checked: true,
+        },
+    );
+
+    Ok(())
+}
+```
+
+This approach should reduce our storage requirements by a scale linear to the uptime percentage.
 
 ### 2. In-Memory State Management
 
-We implemented a concurrent HashMap to maintain the current state of all monitors in memory:
+We implemented a concurrent hash map to maintain the current state of all monitors in memory:
 
 ```rust
 use std::collections::HashMap;
@@ -95,24 +164,43 @@ struct MonitorState {
 }
 ```
 
-This eliminated the need for frequent database queries to determine current status and enabled quick status lookups. As the number of monitors is fixed, the hash map is not expected to grow without bounds.
+This eliminated the need for frequent database queries to determine current status and enabled quick status lookups. As the number of monitors is fixed, the hash map is expected not to grow without bounds.
 
 ### 3. Monitor Isolation Through Task Spawning
 
 Each monitor now runs as an independent Tokio task, preventing any slow API call from affecting others:
 
 ```rust
-async fn spawn_monitor_tasks(monitors: Vec<Monitor>) -> Vec<JoinHandle<()>> {
-    monitors.into_iter().map(|monitor| {
-        tokio::spawn(async move {
-            let mut interval = tokio::time::interval(monitor.check_interval);
+async fn spawn_monitor_task(&self, monitor: Monitor) -> MonitorTask {
+    let monitor_id = monitor.id.clone();
+    let deps = self.deps.clone();
+    let mut shutdown_rx = self.shutdown_tx.subscribe();
 
-            loop {
-                interval.tick().await;
-                perform_monitor_check(&monitor).await;
+    let handle = tokio::spawn(async move {
+        let mut interval = tokio::time::interval(
+            StdDuration::from_secs(monitor.interval_seconds as u64)
+        );
+
+        // Add random jitter to avoid making requests on the same time
+        let jitter = fastrand::u64(0..5000);
+        tokio::time::sleep(StdDuration::from_millis(jitter)).await;
+
+        loop {
+            tokio::select! {
+                _ = interval.tick() => {
+                    if let Err(e) = execute_monitor_check(&monitor, &deps).await {
+                        error!("Monitor {} check failed: {}", monitor.id, e);
+                    }
+                }
+                _ = shutdown_rx.recv() => {
+                    info!("Monitor task {} received shutdown signal", monitor.id);
+                    break;
+                }
             }
-        })
-    }).collect()
+        }
+    });
+
+    MonitorTask { monitor_id, handle }
 }
 ```
 
@@ -141,8 +229,7 @@ The optimizations delivered improvements across various metrics:
 
 **Storage Efficiency:**
 
-- Previous system: ~150,000 database records daily
-- Optimized system: ~50 status change records daily
+- Number of records: from ~150,000 monitor entries reduced to ~50 status change entries daily
 - Database file growth stabilized at manageable levels
 
 **Query Performance:**
@@ -160,8 +247,8 @@ Working with Tokio introduced us to powerful concurrency patterns:
 
 - **Select and join macro** for handling multiple async operations simultaneously
 - **Task spawning** for executing concurrent and independent tasks
-- **Channels** for safe inter-task communication
-- **Arc and RwLock** for shared state management across async boundaries
+- **Channels** for safe inter-task communication and especially for sending shutdown signals
+- **Arc and RwLock** for thread-safe state management across async boundaries
 
 ### Database Design Considerations
 
