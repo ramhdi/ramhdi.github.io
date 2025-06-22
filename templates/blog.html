@@ -1,43 +1,46 @@
-<h1 class="section-title">$title$</h1>
-<div class="blog-grid">
+<h1 class="text-4xl font-bold text-sky-500 text-center mb-12">$title$</h1>
+
+$if(posts)$
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
   $for(posts)$
-  <article class="blog-post">
-    <div class="blog-post-content">
-      <h3 class="blog-post-title">
-        <a href="$url$">$title$</a>
+  <article
+    class="bg-slate-800 rounded-lg border border-slate-700 hover:border-sky-500 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+    <div class="p-6">
+      <h3 class="text-xl font-bold text-sky-500 mb-3">
+        <a href="$url$" class="hover:text-teal-500 transition-colors">$title$</a>
       </h3>
-      <time class="blog-post-date" datetime="$isoDate$">
+      <time class="flex items-center gap-2 text-sm text-slate-400 mb-2" datetime="$isoDate$">
         <i class="fas fa-calendar"></i> $date$
       </time>
       $if(author)$
-      <div class="blog-post-author">
+      <div class="flex items-center gap-2 text-sm text-slate-400 mb-4">
         <i class="fas fa-user"></i> by $author$
       </div>
       $endif$
-      <div class="blog-post-excerpt">
+      <div class="text-slate-300 mb-4 line-clamp-3">
         $if(teaser)$
         $teaser$
         $else$
         Click to read more about this topic...
         $endif$
       </div>
-      <a href="$url$" class="project-link">
+      <a href="$url$"
+        class="inline-flex items-center gap-2 text-teal-500 hover:text-sky-500 transition-colors font-medium">
         Read Full Post <i class="fas fa-arrow-right"></i>
       </a>
     </div>
   </article>
   $endfor$
 </div>
-
-$if(posts)$
 $else$
 <div class="text-center">
-  <div class="card" style="max-width: 500px; margin: 0 auto;">
-    <i class="fas fa-blog" style="font-size: 3rem; color: var(--color-secondary); margin-bottom: 1rem;"></i>
-    <h3>No Posts Yet</h3>
-    <p>I'm working on some great content! Check back soon for technical articles about IoT, embedded systems, and
-      software engineering.</p>
-    <a href="/" class="project-link">
+  <div class="bg-slate-800 rounded-lg border border-slate-700 p-12 max-w-lg mx-auto">
+    <i class="fas fa-blog text-5xl text-sky-500 mb-6"></i>
+    <h3 class="text-2xl font-bold text-sky-500 mb-4">No Posts Yet</h3>
+    <p class="text-slate-300 mb-6">I'm working on some great content! Check back soon for technical articles about IoT,
+      embedded systems, and software engineering.</p>
+    <a href="/"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-teal-500 text-white rounded-lg font-medium hover:-translate-y-1 transition-all duration-300">
       <i class="fas fa-home"></i> Back to Home
     </a>
   </div>

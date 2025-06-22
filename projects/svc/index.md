@@ -1,6 +1,6 @@
 ---
 title: Sous Vide Cooker
-date: 2025-06-06
+date: 2025-06-01
 description: Low-cost sous vide cooker
 github:
 demo:
