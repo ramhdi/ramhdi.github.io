@@ -1,6 +1,6 @@
 ---
 title: ORCA
-date: 2025-06-06
+date: 2025-06-01
 description: A powerful UAV telemetry device.
 github:
 demo:

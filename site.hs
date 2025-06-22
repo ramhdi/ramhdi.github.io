@@ -105,7 +105,6 @@ postCtx =
   dateField "date" "%B %e, %Y"
     `mappend` dateField "isoDate" "%Y-%m-%d"
     `mappend` defaultContext
-
 projectCtx :: Context String
 projectCtx =
   dateField "date" "%B %e, %Y"

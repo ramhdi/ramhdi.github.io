@@ -1,6 +1,6 @@
 ---
 title: JSON Formatter
-date: 2025-06-06
+date: 2025-06-01
 description: A lightweight web tool to beautify JSON data.
 github:
 demo:

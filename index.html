@@ -3,98 +3,104 @@ title: Home
 isHome: true
 ---
 
-<section class="hero">
-  <div class="container">
-    <img src="/images/hero.png" alt="Rama Rahardi" class="hero-image">
-    <h1 class="hero-title">hi!</h1>
-    <p class="hero-subtitle">
+<section class="text-center py-32 px-4">
+  <div class="max-w-4xl mx-auto">
+    <img src="/images/hero.png" alt="Rama Rahardi"
+      class="w-36 h-36 rounded-full mx-auto mb-8 border-4 border-sky-500 hover:scale-105 transition-transform duration-300">
+    <h1 class="text-6xl md:text-7xl font-bold mb-6 hero-title-gradient">hi!</h1>
+    <p class="text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto mb-12">
       I'm Rama, an engineer and tech enthusiast passionate about building innovative solutions.
     </p>
-    <div class="mt-8">
-      <button onclick="showContactPopup()" class="cta-button">
-        <i class="fas fa-envelope"></i> Get In Touch
-      </button>
-    </div>
+    <button onclick="showContactPopup()"
+      class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-sky-500 to-teal-500 text-white rounded-lg font-medium hover:-translate-y-1 transition-all duration-300 text-lg">
+      <i class="fas fa-envelope"></i> Get In Touch
+    </button>
   </div>
 </section>
 
-<section class="section">
-  <div class="container">
-    <h2 class="section-title">Latest Projects</h2>
+<section class="py-16">
+  <div class="max-w-4xl mx-auto px-4">
+    <h2 class="text-4xl font-bold text-sky-500 text-center mb-12">Latest Projects</h2>
     $if(projects)$
-    <div class="blog-grid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
       $for(projects)$
-      <article class="blog-post">
-        <div class="blog-post-content">
-          <h3 class="blog-post-title">
-            <a href="$url$">$title$</a>
+      <article
+        class="bg-slate-800 rounded-lg border border-slate-700 hover:border-sky-500 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+        <div class="p-6">
+          <h3 class="text-xl font-bold text-sky-500 mb-3">
+            <a href="$url$" class="hover:text-teal-500 transition-colors">$title$</a>
           </h3>
-          <time class="blog-post-date" datetime="$isoDate$">
+          <time class="flex items-center gap-2 text-sm text-slate-400 mb-4" datetime="$isoDate$">
             <i class="fas fa-calendar"></i> $date$
           </time>
-          <div class="blog-post-excerpt">
+          <div class="text-slate-300 mb-4 line-clamp-3">
             $if(description)$
             $description$
             $else$
             Learn more about this project...
             $endif$
           </div>
-          <a href="$url$" class="project-link">
+          <a href="$url$"
+            class="inline-flex items-center gap-2 text-teal-500 hover:text-sky-500 transition-colors font-medium">
             View Project <i class="fas fa-arrow-right"></i>
           </a>
         </div>
       </article>
       $endfor$
     </div>
-    <div class="text-center mt-8">
-      <a href="/projects.html" class="cta-button">
+    <div class="text-center">
+      <a href="/projects.html"
+        class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-sky-500 to-teal-500 text-white rounded-lg font-medium hover:-translate-y-1 transition-all duration-300">
         <i class="fas fa-folder-open"></i> View All Projects
       </a>
     </div>
     $else$
     <div class="text-center">
-      <p>Projects coming soon!</p>
+      <p class="text-slate-400 text-lg">Projects coming soon!</p>
     </div>
     $endif$
   </div>
 </section>
 
-<section class="section">
-  <div class="container">
-    <h2 class="section-title">Latest Blog Posts</h2>
+<section class="py-16">
+  <div class="max-w-4xl mx-auto px-4">
+    <h2 class="text-4xl font-bold text-sky-500 text-center mb-12">Latest Blog Posts</h2>
     $if(posts)$
-    <div class="blog-grid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
       $for(posts)$
-      <article class="blog-post">
-        <div class="blog-post-content">
-          <h3 class="blog-post-title">
-            <a href="$url$">$title$</a>
+      <article
+        class="bg-slate-800 rounded-lg border border-slate-700 hover:border-sky-500 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+        <div class="p-6">
+          <h3 class="text-xl font-bold text-sky-500 mb-3">
+            <a href="$url$" class="hover:text-teal-500 transition-colors">$title$</a>
           </h3>
-          <time class="blog-post-date" datetime="$isoDate$">
+          <time class="flex items-center gap-2 text-sm text-slate-400 mb-4" datetime="$isoDate$">
             <i class="fas fa-calendar"></i> $date$
           </time>
-          <div class="blog-post-excerpt">
+          <div class="text-slate-300 mb-4 line-clamp-3">
             $if(teaser)$
             $teaser$
             $else$
             Read more about this topic...
             $endif$
           </div>
-          <a href="$url$" class="project-link">
+          <a href="$url$"
+            class="inline-flex items-center gap-2 text-teal-500 hover:text-sky-500 transition-colors font-medium">
             Read More <i class="fas fa-arrow-right"></i>
           </a>
         </div>
       </article>
       $endfor$
     </div>
-    <div class="text-center mt-8">
-      <a href="/blog.html" class="cta-button">
+    <div class="text-center">
+      <a href="/blog.html"
+        class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-sky-500 to-teal-500 text-white rounded-lg font-medium hover:-translate-y-1 transition-all duration-300">
         <i class="fas fa-blog"></i> View All Posts
       </a>
     </div>
     $else$
     <div class="text-center">
-      <p>No blog posts yet. Check back soon!</p>
+      <p class="text-slate-400 text-lg">No blog posts yet. Check back soon!</p>
     </div>
     $endif$
   </div>

@@ -1,29 +1,29 @@
-<article class="blog-post-single">
-  <header class="post-header">
-    <h1 class="post-title">$title$</h1>
-    <div class="post-meta">
-      <time class="post-date" datetime="$isoDate$">
+<article class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+  <header class="px-8 py-6 border-b border-slate-700">
+    <h1 class="text-3xl font-bold text-sky-500 mb-4">$title$</h1>
+    <div class="flex flex-wrap gap-4 text-sm text-slate-400">
+      <time class="flex items-center gap-2" datetime="$isoDate$">
         <i class="fas fa-calendar"></i> $date$
       </time>
       $if(author)$
-      <span class="post-author">
+      <span class="flex items-center gap-2">
         <i class="fas fa-user"></i> by $author$
       </span>
       $endif$
     </div>
   </header>
 
-  <div class="post-content">
-    $body$
+  <div class="px-8 py-6">
+    <div class="markdown-content">
+      $body$
+    </div>
   </div>
 
-  <footer class="post-footer">
-    <div class="post-navigation">
-      <a href="/blog.html" class="nav-link">
+  <footer class="px-8 py-6 border-t border-slate-700">
+    <div class="flex flex-col sm:flex-row justify-between gap-4">
+      <a href="/blog.html"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-700 rounded hover:border-sky-500 transition-colors">
         <i class="fas fa-arrow-left"></i> Back to Blog
-      </a>
-      <a href="/archive.html" class="nav-link">
-        All Posts <i class="fas fa-list"></i>
       </a>
     </div>
   </footer>
